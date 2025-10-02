@@ -6,6 +6,15 @@ export class FilterModule extends BaseAudioModule {
 
   constructor(config: ModuleConfig, audioCtx: AudioContext) {
     super(config, audioCtx);
+    
+    // Check if filter was initialized properly
+    console.log('🎛️ [Filter] After super(), filter exists?', !!this.filter);
+    
+    if (!this.filter) {
+      console.log('⚠️ [Filter] Filter was null after super(), rebuilding...');
+      this.buildAudio();
+      console.log('🎛️ [Filter] After rebuild, filter exists?', !!this.filter);
+    }
   }
 
   getTitle(): string {
@@ -57,9 +66,15 @@ export class FilterModule extends BaseAudioModule {
     this.filter = this.audioCtx.createBiquadFilter();
 
     // Default values
-    this.filter.type = this.state.type || 'lowpass';
+    this.filter.type = (this.state.type || 'lowpass') as BiquadFilterType;
     this.filter.frequency.value = this.state.cutoff || 1000;
     this.filter.Q.value = this.state.q || 1;
+
+    console.log('🎛️ [Filter] Built with initial state:', {
+      type: this.filter.type,
+      frequency: this.filter.frequency.value,
+      Q: this.filter.Q.value
+    });
 
     // Define ports
     this.inputs.set('in', { name: 'in', node: this.filter });
@@ -68,40 +83,86 @@ export class FilterModule extends BaseAudioModule {
     this.outputs.set('out', { name: 'out', node: this.filter });
   }
 
+  override onControlChange(controlId: string, value: any): void {
+    console.log('🎛️ [Filter] onControlChange called:', controlId, '=', value);
+    
+    // Update state
+    this.state[controlId] = value;
+    
+    // Apply immediately to the filter node
+    if (!this.filter) {
+      console.error('🎛️ [Filter] Filter node not initialized!');
+      return;
+    }
+
+    switch (controlId) {
+      case 'type':
+        console.log('🎛️ [Filter] Changing type from', this.filter.type, 'to', value);
+        this.filter.type = value as BiquadFilterType;
+        console.log('🎛️ [Filter] Type is now:', this.filter.type);
+        break;
+      
+      case 'cutoff':
+        console.log('🎛️ [Filter] Changing frequency from', this.filter.frequency.value, 'to', value);
+        this.filter.frequency.setTargetAtTime(value, this.audioCtx.currentTime, 0.01);
+        console.log('🎛️ [Filter] Frequency value:', this.filter.frequency.value);
+        break;
+      
+      case 'q':
+        console.log('🎛️ [Filter] Changing Q from', this.filter.Q.value, 'to', value);
+        this.filter.Q.setTargetAtTime(value, this.audioCtx.currentTime, 0.01);
+        console.log('🎛️ [Filter] Q value:', this.filter.Q.value);
+        break;
+    }
+  }
+
   protected override applyState(): void {
-    if (this.filter) {
-      if (this.state.type) {
-        this.filter.type = this.state.type;
-      }
-      if (this.state.cutoff !== undefined) {
-        this.filter.frequency.setTargetAtTime(
-          this.state.cutoff,
-          this.audioCtx.currentTime,
-          0.01
-        );
-      }
-      if (this.state.q !== undefined) {
-        this.filter.Q.setTargetAtTime(
-          this.state.q,
-          this.audioCtx.currentTime,
-          0.01
-        );
-      }
+    if (!this.filter) return;
+    
+    console.log('🎛️ [Filter] Applying state:', this.state);
+    
+    if (this.state.type !== undefined) {
+      console.log('🎛️ [Filter] Setting type to:', this.state.type);
+      this.filter.type = this.state.type as BiquadFilterType;
+    }
+    
+    if (this.state.cutoff !== undefined) {
+      console.log('🎛️ [Filter] Setting frequency to:', this.state.cutoff);
+      this.filter.frequency.setTargetAtTime(
+        this.state.cutoff,
+        this.audioCtx.currentTime,
+        0.01
+      );
+    }
+    
+    if (this.state.q !== undefined) {
+      console.log('🎛️ [Filter] Setting Q to:', this.state.q);
+      this.filter.Q.setTargetAtTime(
+        this.state.q,
+        this.audioCtx.currentTime,
+        0.01
+      );
     }
   }
 
   setType(type: BiquadFilterType): void {
     this.state.type = type;
-    this.filter.type = type;
+    if (this.filter) {
+      this.filter.type = type;
+    }
   }
 
   setCutoff(cutoff: number): void {
     this.state.cutoff = cutoff;
-    this.filter.frequency.setTargetAtTime(cutoff, this.audioCtx.currentTime, 0.01);
+    if (this.filter) {
+      this.filter.frequency.setTargetAtTime(cutoff, this.audioCtx.currentTime, 0.01);
+    }
   }
 
   setQ(q: number): void {
     this.state.q = q;
-    this.filter.Q.setTargetAtTime(q, this.audioCtx.currentTime, 0.01);
+    if (this.filter) {
+      this.filter.Q.setTargetAtTime(q, this.audioCtx.currentTime, 0.01);
+    }
   }
 }
