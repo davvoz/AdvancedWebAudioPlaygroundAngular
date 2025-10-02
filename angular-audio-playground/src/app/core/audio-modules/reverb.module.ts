@@ -1,5 +1,5 @@
 import { BaseAudioModule } from './base-audio-module';
-import { ModuleConfig } from '../../shared/models/module.model';
+import { ModuleConfig, ModuleControl } from '../../shared/models/module.model';
 
 export class ReverbModule extends BaseAudioModule {
   private convolver!: ConvolverNode;
@@ -13,6 +13,39 @@ export class ReverbModule extends BaseAudioModule {
 
   getTitle(): string {
     return 'Reverb';
+  }
+
+  override getControls(): ModuleControl[] {
+    return [
+      {
+        id: 'duration',
+        label: 'Duration',
+        type: 'range',
+        min: 0.1,
+        max: 5,
+        step: 0.1,
+        value: this.state.duration || 2,
+        unit: 's'
+      },
+      {
+        id: 'decay',
+        label: 'Decay',
+        type: 'range',
+        min: 0.1,
+        max: 10,
+        step: 0.1,
+        value: this.state.decay || 2
+      },
+      {
+        id: 'mix',
+        label: 'Wet/Dry Mix',
+        type: 'range',
+        min: 0,
+        max: 1,
+        step: 0.01,
+        value: this.state.mix || 0.3
+      }
+    ];
   }
 
   buildAudio(): void {

@@ -9,6 +9,26 @@ export interface Port {
   param?: AudioParam;
 }
 
+export type ControlType = 'range' | 'select' | 'number' | 'checkbox';
+
+export interface ControlOption {
+  value: string | number;
+  label: string;
+}
+
+export interface ModuleControl {
+  id: string;
+  label: string;
+  type: ControlType;
+  min?: number;
+  max?: number;
+  step?: number;
+  value: any;
+  options?: ControlOption[];
+  unit?: string;
+  logarithmic?: boolean; // Per slider con scala logaritmica
+}
+
 export interface ModuleConfig {
   id: string;
   type: ModuleType;

@@ -1,5 +1,5 @@
 import { BaseAudioModule } from './base-audio-module';
-import { ModuleConfig } from '../../shared/models/module.model';
+import { ModuleConfig, ModuleControl } from '../../shared/models/module.model';
 
 export class GainModule extends BaseAudioModule {
   private gainNode!: GainNode;
@@ -10,6 +10,20 @@ export class GainModule extends BaseAudioModule {
 
   getTitle(): string {
     return 'Gain';
+  }
+
+  override getControls(): ModuleControl[] {
+    return [
+      {
+        id: 'gain',
+        label: 'Gain',
+        type: 'range',
+        min: 0,
+        max: 2,
+        step: 0.01,
+        value: this.state.gain || 1.0
+      }
+    ];
   }
 
   buildAudio(): void {

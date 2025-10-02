@@ -1,5 +1,5 @@
 import { BaseAudioModule } from './base-audio-module';
-import { ModuleConfig } from '../../shared/models/module.model';
+import { ModuleConfig, ModuleControl } from '../../shared/models/module.model';
 
 export class LFOModule extends BaseAudioModule {
   private lfoOscillator!: OscillatorNode;
@@ -11,6 +11,42 @@ export class LFOModule extends BaseAudioModule {
 
   getTitle(): string {
     return 'LFO';
+  }
+
+  override getControls(): ModuleControl[] {
+    return [
+      {
+        id: 'type',
+        label: 'Waveform',
+        type: 'select',
+        value: this.state.type || 'sine',
+        options: [
+          { value: 'sine', label: 'Sine' },
+          { value: 'square', label: 'Square' },
+          { value: 'sawtooth', label: 'Sawtooth' },
+          { value: 'triangle', label: 'Triangle' }
+        ]
+      },
+      {
+        id: 'rate',
+        label: 'Rate',
+        type: 'range',
+        min: 0.01,
+        max: 20,
+        step: 0.01,
+        value: this.state.rate || 2,
+        unit: 'Hz'
+      },
+      {
+        id: 'depth',
+        label: 'Depth',
+        type: 'range',
+        min: 0,
+        max: 1000,
+        step: 1,
+        value: this.state.depth || 100
+      }
+    ];
   }
 
   buildAudio(): void {

@@ -1,5 +1,5 @@
 import { BaseAudioModule } from './base-audio-module';
-import { ModuleConfig } from '../../shared/models/module.model';
+import { ModuleConfig, ModuleControl } from '../../shared/models/module.model';
 
 export class DistortionModule extends BaseAudioModule {
   private waveshaper!: WaveShaperNode;
@@ -12,6 +12,20 @@ export class DistortionModule extends BaseAudioModule {
 
   getTitle(): string {
     return 'Distortion';
+  }
+
+  override getControls(): ModuleControl[] {
+    return [
+      {
+        id: 'amount',
+        label: 'Drive',
+        type: 'range',
+        min: 0,
+        max: 1,
+        step: 0.01,
+        value: this.state.amount || 0.5
+      }
+    ];
   }
 
   buildAudio(): void {

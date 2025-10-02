@@ -1,5 +1,5 @@
 import { BaseAudioModule } from './base-audio-module';
-import { ModuleConfig } from '../../shared/models/module.model';
+import { ModuleConfig, ModuleControl } from '../../shared/models/module.model';
 
 export class FilterModule extends BaseAudioModule {
   private filter!: BiquadFilterNode;
@@ -10,6 +10,47 @@ export class FilterModule extends BaseAudioModule {
 
   getTitle(): string {
     return 'Filter';
+  }
+
+  override getControls(): ModuleControl[] {
+    return [
+      {
+        id: 'type',
+        label: 'Type',
+        type: 'select',
+        value: this.state.type || 'lowpass',
+        options: [
+          { value: 'lowpass', label: 'Lowpass' },
+          { value: 'highpass', label: 'Highpass' },
+          { value: 'bandpass', label: 'Bandpass' },
+          { value: 'notch', label: 'Notch' },
+          { value: 'allpass', label: 'Allpass' },
+          { value: 'lowshelf', label: 'Low Shelf' },
+          { value: 'highshelf', label: 'High Shelf' },
+          { value: 'peaking', label: 'Peaking' }
+        ]
+      },
+      {
+        id: 'cutoff',
+        label: 'Frequency',
+        type: 'number',
+        min: 20,
+        max: 20000,
+        step: 1,
+        value: this.state.cutoff || 1000,
+        unit: 'Hz',
+        logarithmic: true
+      },
+      {
+        id: 'q',
+        label: 'Q / Resonance',
+        type: 'range',
+        min: 0.001,
+        max: 30,
+        step: 0.1,
+        value: this.state.q || 1
+      }
+    ];
   }
 
   buildAudio(): void {

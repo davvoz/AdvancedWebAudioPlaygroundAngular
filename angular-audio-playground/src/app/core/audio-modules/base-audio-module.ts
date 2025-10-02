@@ -1,4 +1,4 @@
-import { ModuleConfig, Port } from '../../shared/models/module.model';
+import { ModuleConfig, Port, ModuleControl } from '../../shared/models/module.model';
 
 export abstract class BaseAudioModule {
   public id: string;
@@ -21,6 +21,20 @@ export abstract class BaseAudioModule {
 
   abstract buildAudio(): void;
   abstract getTitle(): string;
+  
+  // Override in subclasses to provide UI controls
+  getControls(): ModuleControl[] {
+    return [];
+  }
+
+  // Handle control value changes
+  onControlChange(controlId: string, value: any): void {
+    console.log(`🔊 [${this.type}] Control "${controlId}" = ${value}`);
+    this.state[controlId] = value;
+    console.log(`🔊 [${this.type}] State updated:`, this.state);
+    this.applyState();
+    console.log(`🔊 [${this.type}] applyState() called`);
+  }
 
   connect(outputPort: string, targetModule: BaseAudioModule, inputPort: string): void {
     const output = this.outputs.get(outputPort);

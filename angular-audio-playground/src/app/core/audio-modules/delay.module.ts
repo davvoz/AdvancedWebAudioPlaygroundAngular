@@ -1,5 +1,5 @@
 import { BaseAudioModule } from './base-audio-module';
-import { ModuleConfig } from '../../shared/models/module.model';
+import { ModuleConfig, ModuleControl } from '../../shared/models/module.model';
 
 export class DelayModule extends BaseAudioModule {
   private delayNode!: DelayNode;
@@ -14,6 +14,39 @@ export class DelayModule extends BaseAudioModule {
 
   getTitle(): string {
     return 'Delay';
+  }
+
+  override getControls(): ModuleControl[] {
+    return [
+      {
+        id: 'time',
+        label: 'Delay Time',
+        type: 'range',
+        min: 0,
+        max: 2,
+        step: 0.01,
+        value: this.state.time || 0.5,
+        unit: 's'
+      },
+      {
+        id: 'feedback',
+        label: 'Feedback',
+        type: 'range',
+        min: 0,
+        max: 0.95,
+        step: 0.01,
+        value: this.state.feedback || 0.3
+      },
+      {
+        id: 'mix',
+        label: 'Wet/Dry Mix',
+        type: 'range',
+        min: 0,
+        max: 1,
+        step: 0.01,
+        value: this.state.mix || 0.5
+      }
+    ];
   }
 
   buildAudio(): void {
