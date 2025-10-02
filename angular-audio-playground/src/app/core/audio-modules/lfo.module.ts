@@ -7,6 +7,17 @@ export class LFOModule extends BaseAudioModule {
 
   constructor(config: ModuleConfig, audioCtx: AudioContext) {
     super(config, audioCtx);
+    
+    // Check if nodes were initialized properly
+    console.log('🎛️ [LFO] After super(), lfoOscillator exists?', !!this.lfoOscillator);
+    console.log('🎛️ [LFO] After super(), lfoGain exists?', !!this.lfoGain);
+    
+    if (!this.lfoOscillator || !this.lfoGain) {
+      console.log('⚠️ [LFO] Nodes were null after super(), rebuilding...');
+      this.buildAudio();
+      console.log('🎛️ [LFO] After rebuild, lfoOscillator exists?', !!this.lfoOscillator);
+      console.log('🎛️ [LFO] After rebuild, lfoGain exists?', !!this.lfoGain);
+    }
   }
 
   getTitle(): string {
@@ -58,6 +69,12 @@ export class LFOModule extends BaseAudioModule {
     this.lfoOscillator.frequency.value = this.state.rate || 2;
     this.lfoGain.gain.value = this.state.depth || 100;
 
+    console.log('🎛️ [LFO] Built with initial state:', {
+      type: this.lfoOscillator.type,
+      rate: this.lfoOscillator.frequency.value,
+      depth: this.lfoGain.gain.value
+    });
+
     this.lfoOscillator.connect(this.lfoGain);
 
     // Start LFO
@@ -70,6 +87,36 @@ export class LFOModule extends BaseAudioModule {
     // Define ports
     this.inputs.set('rate', { name: 'rate', param: this.lfoOscillator.frequency });
     this.outputs.set('out', { name: 'out', node: this.lfoGain });
+  }
+
+  override onControlChange(controlId: string, value: any): void {
+    console.log('🎛️ [LFO] onControlChange called:', controlId, '=', value);
+    
+    // Update state
+    this.state[controlId] = value;
+    
+    // Apply immediately
+    if (!this.lfoOscillator || !this.lfoGain) {
+      console.error('🎛️ [LFO] Nodes not initialized!');
+      return;
+    }
+
+    switch (controlId) {
+      case 'type':
+        console.log('🎛️ [LFO] Changing type from', this.lfoOscillator.type, 'to', value);
+        this.lfoOscillator.type = value as OscillatorType;
+        break;
+      
+      case 'rate':
+        console.log('🎛️ [LFO] Changing rate from', this.lfoOscillator.frequency.value, 'to', value);
+        this.lfoOscillator.frequency.setTargetAtTime(value, this.audioCtx.currentTime, 0.01);
+        break;
+      
+      case 'depth':
+        console.log('🎛️ [LFO] Changing depth from', this.lfoGain.gain.value, 'to', value);
+        this.lfoGain.gain.setTargetAtTime(value, this.audioCtx.currentTime, 0.01);
+        break;
+    }
   }
 
   protected override applyState(): void {
@@ -96,17 +143,23 @@ export class LFOModule extends BaseAudioModule {
 
   setRate(rate: number): void {
     this.state.rate = rate;
-    this.lfoOscillator.frequency.setTargetAtTime(rate, this.audioCtx.currentTime, 0.01);
+    if (this.lfoOscillator) {
+      this.lfoOscillator.frequency.setTargetAtTime(rate, this.audioCtx.currentTime, 0.01);
+    }
   }
 
   setDepth(depth: number): void {
     this.state.depth = depth;
-    this.lfoGain.gain.setTargetAtTime(depth, this.audioCtx.currentTime, 0.01);
+    if (this.lfoGain) {
+      this.lfoGain.gain.setTargetAtTime(depth, this.audioCtx.currentTime, 0.01);
+    }
   }
 
   setType(type: OscillatorType): void {
     this.state.type = type;
-    this.lfoOscillator.type = type;
+    if (this.lfoOscillator) {
+      this.lfoOscillator.type = type;
+    }
   }
 
   override dispose(): void {
