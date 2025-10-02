@@ -1,0 +1,94 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  border-bottom: 2px solid #30363d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 100;
+}
+
+.header-left h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #30363d;
+    border-color: #484f58;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.audio-toggle {
+  background: #1a2e1a;
+  border-color: #2d5a2d;
+  color: #7ee787;
+
+  &.running {
+    background: #2d5a2d;
+    border-color: #57ab5a;
+  }
+
+  &:hover {
+    background: #2d5a2d;
+    border-color: #57ab5a;
+  }
+}
+
+.select-preset {
+  padding: 0.5rem 1rem;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #30363d;
+    border-color: #484f58;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+  }
+}
+
+.file-label {
+  cursor: pointer;
+  
+  input[type="file"] {
+    display: none;
+  }
+}

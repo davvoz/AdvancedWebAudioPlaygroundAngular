@@ -1,0 +1,13 @@
+<aside class="palette">
+  <h3 class="palette-title">Modules</h3>
+  <div class="palette-items">
+    @for (type of moduleTypes; track type) {
+      <div 
+        class="palette-item"
+        draggable="true"
+        (dragstart)="onDragStart($event, type)">
+        {{ type }}
+      </div>
+    }
+  </div>
+</aside>

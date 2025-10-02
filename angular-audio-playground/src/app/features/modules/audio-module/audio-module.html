@@ -1,0 +1,36 @@
+<div 
+  class="audio-module"
+  [style.left.px]="position.x"
+  [style.top.px]="position.y">
+  
+  <div class="module-header" (mousedown)="onHeaderMouseDown($event)">
+    <span class="module-title">{{ module.getTitle() }}</span>
+    <button class="module-close" (click)="onRemove()" (mousedown)="$event.stopPropagation()">×</button>
+  </div>
+
+  <div class="module-body">
+    <div class="ports-container">
+      <div class="ports inputs">
+        @for (port of getInputPorts(); track port) {
+          <div 
+            class="port input"
+            (click)="onPortClick(port, 'input')">
+            <span class="port-label">{{ port }}</span>
+            <div class="port-dot"></div>
+          </div>
+        }
+      </div>
+
+      <div class="ports outputs">
+        @for (port of getOutputPorts(); track port) {
+          <div 
+            class="port output"
+            (click)="onPortClick(port, 'output')">
+            <div class="port-dot"></div>
+            <span class="port-label">{{ port }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

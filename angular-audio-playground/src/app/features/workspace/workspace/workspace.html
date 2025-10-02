@@ -1,0 +1,36 @@
+<div class="workspace-container">
+  <app-palette (moduleCreate)="onModuleCreated($event)" />
+  
+  <div class="workspace-main">
+    <div class="zoom-controls">
+      <button class="zoom-btn" (click)="zoomOut()">−</button>
+      <span class="zoom-level">{{ (zoom() * 100).toFixed(0) }}%</span>
+      <button class="zoom-btn" (click)="zoomIn()">+</button>
+      <button class="zoom-btn" (click)="resetZoom()">⟲</button>
+    </div>
+
+    <div 
+      #workspace
+      class="workspace"
+      [style.transform]="'scale(' + zoom() + ')'"
+      (mousemove)="onWorkspaceMouseMove($event)"
+      (mouseup)="onWorkspaceMouseUp()"
+      (click)="onWorkspaceClick($event)"
+      (dragover)="onWorkspaceDragOver($event)"
+      (drop)="onWorkspaceDrop($event)">
+      
+      <canvas #canvas class="cable-canvas"></canvas>
+      
+      @for (module of modules() | keyvalue; track module.key) {
+        <app-audio-module
+          [module]="module.value"
+          [position]="modulePositions.get(module.key) || { x: 0, y: 0 }"
+          (positionChange)="onModuleMoved($event)"
+          (dragStart)="onModuleDragStart($event)"
+          (dragEnd)="onModuleDragEnd()"
+          (portClick)="onPortClick($event)"
+          (remove)="onModuleRemoved(module.key)" />
+      }
+    </div>
+  </div>
+</div>

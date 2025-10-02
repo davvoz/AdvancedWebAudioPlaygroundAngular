@@ -1,0 +1,36 @@
+<header class="app-header">
+  <div class="header-left">
+    <h1>Advanced Web Audio API Playground</h1>
+  </div>
+  
+  <div class="header-actions">
+    <button 
+      class="btn audio-toggle"
+      [class.running]="audioState() === 'running'"
+      (click)="toggleAudio()">
+      {{ audioState() === 'running' ? 'Stop Audio' : 'Start Audio' }}
+    </button>
+
+    <select 
+      class="select-preset"
+      aria-label="Select preset"
+      [(ngModel)]="selectedPreset"
+      (change)="loadPreset()">
+      <option value="">— Select Preset —</option>
+      @for (preset of presetNames; track preset) {
+        <option [value]="preset">{{ preset }}</option>
+      }
+    </select>
+
+    <button class="btn" (click)="newPreset()">New</button>
+    <button class="btn" (click)="exportPreset()">Export</button>
+    <label class="btn file-label">
+      Import
+      <input 
+        type="file" 
+        accept=".json"
+        (change)="importPreset($event)"
+        style="display: none;">
+    </label>
+  </div>
+</header>
